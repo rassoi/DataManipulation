@@ -63,7 +63,7 @@ dalNoDalType_list = ["dal"]*1 + ["noDal"]*2
 
 if not firebase_admin._apps:
     cred = credentials.Certificate(
-        '/Users/manishsingh/Documents/Study/meal_entry_python1/rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
+        r'C:\Users\Siddhant Bhatt\Downloads\rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
     default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 meals_list = []

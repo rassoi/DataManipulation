@@ -6,22 +6,58 @@ import datetime
 from chooseMeal import lunch, brakefast, dinner
 
 
+
 # add ingredient update
 # add batch processing
 # Make all ingredients not audited an available
+
+
 def get_meals():
     if not firebase_admin._apps:
         cred = credentials.Certificate(
-            '/Users/manishsingh/Documents/Study/meal_entry_python1/rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
+            r'C:\Users\Siddhant Bhatt\Downloads\rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
         default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
+    def addIngrediants(mealId, uid):
+        doc_ref=db.collection(u'recipes').document(mealId).get()
+        if doc_ref.exists:
+            meal_name=doc_ref.to_dict()['name']
+            ingreds=doc_ref.to_dict()['ingred_names']
+            ingreds_list=ingreds.split('*')
+            for ingred in ingreds_list:
+                ingred_id=ingred.split('+')
+                if(len(ingred_id)>1):
+                    db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
+                        {u"recipe_names": firestore.ArrayUnion([meal_name])}
+                        )
+                    ingred_data=db.collection(u"meal_ingred").document(uid+ingred_id[1]).get().to_dict()
+                    if(ingred_data['meal_count']==0):
+                        db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
+                            {u'meal_count': 1}
+                        )                        
+
+                        
+
+                    
+
+        return
+       
 
     def scheduleMeal(mealId, Day, mealTime, uid):
 
+        
+        # meal_cnt=db.collection(u'meal_ingred').document(uid+mealId).get(
+        #     {u"meal_time": firestore.ArrayUnion([Day+mealTime])})
+        
+        # meal_cnt=meal_cnt+1
+        # db.collection(u'temp').document(uid+mealId).update(
+        #     {u"meal_time": meal_cnt})
         db.collection(u'temp').document(uid+mealId).update(
             {u"meal_time": firestore.ArrayUnion([Day+mealTime])})
 
-        print(mealId, Day, mealTime)
+        #print(mealId, Day, mealTime)
+        addIngrediants(mealId, uid)
+        #print("yoyo\n")
 
     def mealScheduledOrNot(day, uids):
         flag = 0
@@ -52,7 +88,7 @@ def get_meals():
     day4 = date4.strftime('%A')
     day5 = date5.strftime('%A')
 
-    uid = ["qgAmuXBvsRMXpQDUvxS0FraQiQH3"]
+    uid = ["Gw6DP7h1xnN0h4IH5sAI7kxOT0K3"]
     # recipes = db.collection(u'temp').stream()
 
     days = ["", "Today", "Tomorrow", day3, day4, day5]
@@ -128,22 +164,17 @@ def get_meals():
         flagDay1 = mealScheduledOrNot(days[1], uids)
 
         print(flagDay3, flagDay2, flagDay1)
-        if flagDay3 == 0:
-            if flagDay2 == 0:
-                if flagDay1 == 0:
-                    setMeals(uids, days[3])
-                    setMeals(uids, days[2])
-                    setMeals(uids, days[1])
-                    flag = 1
-
+        if not(flagDay2 or flagDay3 or flagDay1):
+                        setMeals(uids, days[3])
+                        setMeals(uids, days[2])
+                        setMeals(uids, days[1])
+                        flag=1
         print(flag, flagDay5, flagDay4, flagDay3)
-        if flag == 0:
-            if flagDay5 == 0:
-                if flagDay4 == 0:
-                    if flagDay3 == 0:
+        if not(flag or flagDay5 or flagDay4 or flagDay3):
                         setMeals(uids, days[5])
                         setMeals(uids, days[4])
                         setMeals(uids, days[3])
+
 
 
 get_meals()
