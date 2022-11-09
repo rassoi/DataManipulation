@@ -15,15 +15,15 @@ if not firebase_admin._apps:
     default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-today = datetime.datetime.today()+datetime.timedelta(days=1)
+today = datetime.datetime.today()
 
-tomorrow = today+datetime.timedelta(days=2)
+tomorrow = today+datetime.timedelta(days=1)
 
-day3 = today+datetime.timedelta(days=3)
+day3 = today+datetime.timedelta(days=2)
 
-day4 = today+datetime.timedelta(days=4)
+day4 = today+datetime.timedelta(days=3)
 
-day5 = today+datetime.timedelta(days=5)
+day5 = today+datetime.timedelta(days=4)
 
 day = ["Today", "Tomorrow", day3.strftime(
     '%A'), day4.strftime('%A'), day5.strftime('%A')]
@@ -45,12 +45,18 @@ uid_list = ["qqgAmuXBvsRMXpQDUvxS0FraQiQH3", "qgAmuXBvsRMXpQDUvxS0FraQiQH3"]
 
 def ingredRemover(ingred_id,meal):
   
+    batch=db.batch()
+    ingred_ref=db.collection(u'meal_ingred').document(ingred_id)
+    batch.update(ingred_ref,{u'recipe_names': firestore.ArrayRemove([meal])})
+    db.collection(u'meal_ingred').document(ingred_id).update({u'recipe_names': firestore.ArrayRemove([meal])})
     db.collection(u'meal_ingred').document(ingred_id).update({u'recipe_names': firestore.ArrayRemove([meal])})
     meal_length=len(db.collection(u'meal_ingred').document(ingred_id).get().to_dict()['recipe_names'])
+    batch.update(ingred_ref,{u'meal_count': meal_length})
     db.collection(u'meal_ingred').document(ingred_id).update({'meal_count':meal_length})
     if(meal_length==0):
-        db.collection(u'meal_ingred').document(ingred_id).update({'status': 'unavailable'})
-        db.collection(u'meal_ingred').document(ingred_id).update({'audit': 0})
+        batch.update(ingred_ref,{u'status': 'unavailable'})
+        batch.update(ingred_ref,{u'audit': '0'})
+    batch.commit()
     
     return 
 def update_meal_time(day, action, meal_time_list,recipe_id,user_id,meal):
