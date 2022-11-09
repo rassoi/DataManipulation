@@ -48,8 +48,6 @@ def ingredRemover(ingred_id,meal):
     batch=db.batch()
     ingred_ref=db.collection(u'meal_ingred').document(ingred_id)
     batch.update(ingred_ref,{u'recipe_names': firestore.ArrayRemove([meal])})
-    db.collection(u'meal_ingred').document(ingred_id).update({u'recipe_names': firestore.ArrayRemove([meal])})
-    db.collection(u'meal_ingred').document(ingred_id).update({u'recipe_names': firestore.ArrayRemove([meal])})
     meal_length=len(db.collection(u'meal_ingred').document(ingred_id).get().to_dict()['recipe_names'])
     batch.update(ingred_ref,{u'meal_count': meal_length})
     db.collection(u'meal_ingred').document(ingred_id).update({'meal_count':meal_length})
