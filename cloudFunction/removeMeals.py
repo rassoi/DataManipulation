@@ -15,11 +15,15 @@ def mealRemover():
     docs=db.collection("meal_ingred").stream()
     for doc in docs:
         if(doc.to_dict()['user_uid']=='Gw6DP7h1xnN0h4IH5sAI7kxOT0K3'):
+            bla=db.collection(u'meal_ingred').document(doc.id).get().to_dict()
+            print(doc.id)
+            print(bla)
             #print(f'{doc.id}==>{doc.to_dict()}')
-            db.collection(u'meal_ingred').document(doc.id).update({'status': 'unavailable'})
-            db.collection(u'meal_ingred').document(doc.id).update({'meal_count': 0})
-            db.collection(u'meal_ingred').document(doc.id).update({'audit': 0})
-            db.collection(u'meal_ingred').document(doc.id).update({'recipe_names':[]})
+            # db.collection(u'meal_ingred').document(doc.id).update({'status': 'unavailable'})
+            # db.collection(u'meal_ingred').document(doc.id).update({'meal_count': 0})
+            # db.collection(u'meal_ingred').document(doc.id).update({'audit': 0})
+            # db.collection(u'meal_ingred').document(doc.id).update({'recipe_names':[]})
+            break
     return 
 
 mealRemover()
