@@ -30,11 +30,10 @@ def get_meals():
                     db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
                         {u"recipe_names": firestore.ArrayUnion([meal_name])}
                         )
-                    ingred_data=db.collection(u"meal_ingred").document(uid+ingred_id[1]).get().to_dict()
-                    if(ingred_data['meal_count']==0):
-                        db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
-                            {u'meal_count': 1}
-                        )                        
+                    meal_length=len(db.collection(u'meal_ingred').document(uid+ingred_id[1]).get().to_dict()['recipe_names'])
+                    db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
+                            {u'meal_count': meal_length}
+                    )                     
 
                         
 
