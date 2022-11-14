@@ -43,15 +43,17 @@ print("1.difference ", difference)
 uid_list = ["qqgAmuXBvsRMXpQDUvxS0FraQiQH3", "qgAmuXBvsRMXpQDUvxS0FraQiQH3"]
 # , "qgAmuXBvsRMXpQDUvxS0FraQiQH3"
 
-def ingredRemover(ingred_id,meal):
+def ingredRemover(ingred_id,meal,day,meal_time,recipe_id):
   
+    meal_entry=meal+' : '+day+' : '+ meal_time + ' + '+recipe_id
     batch=db.batch()
     ingred_ref=db.collection(u'meal_ingred').document(ingred_id)
-    batch.update(ingred_ref,{u'recipe_names': firestore.ArrayRemove([meal])})
-    meal_length=len(db.collection(u'meal_ingred').document(ingred_id).get().to_dict()['recipe_names'])
-    batch.update(ingred_ref,{u'meal_count': meal_length})
-    db.collection(u'meal_ingred').document(ingred_id).update({'meal_count':meal_length})
-    if(meal_length==0):
+    batch.update(ingred_ref,{u'recipe_names': firestore.ArrayRemove([meal_entry])})
+    batch.commit()
+    meal_length_for_ingred=len(db.collection(u'meal_ingred').document(ingred_id).get().to_dict()['recipe_names'])
+    batch=db.batch()
+    batch.update(ingred_ref,{u'meal_count': meal_length_for_ingred})
+    if(meal_length_for_ingred==0):
         batch.update(ingred_ref,{u'status': 'unavailable'})
         batch.update(ingred_ref,{u'audit': '0'})
     batch.commit()
@@ -72,6 +74,14 @@ def update_meal_time(day, action, meal_time_list,recipe_id,user_id,meal):
                 j = j+1
                 # print("removing : ", new_list[i-j])
 
+                #meal_entry=meal_name+' : '+Day+' : '+ mealtime + ' + '+mealId
+                            #     {"meal_time": firestore.ArrayUnion([a])})
+                ingreds= db.collection(u'temp').document(recipe_id).get().to_dict()['ingred_names']
+                ingreds_list=ingreds.split('*')
+                for ingred in ingreds_list:
+                    ingred_id=ingred.split('+')
+                    if(len(ingred)>1):
+                        ingredRemover(user_id+ingred_id[1],meal,day,meal_time_list[i],recipe_id)
             else:
                 # print("****", new_list)
                 # db.collection(u'temp').document(recipe.id).update(

@@ -18,17 +18,18 @@ def get_meals():
             r'C:\Users\Siddhant Bhatt\Downloads\rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
         default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
-    def addIngrediants(mealId, uid):
+    def addIngrediants(mealId, uid, Day, mealtime):
         doc_ref=db.collection(u'recipes').document(mealId).get()
         if doc_ref.exists:
             meal_name=doc_ref.to_dict()['name']
+            meal_entry=meal_name+' : '+Day+' : '+ mealtime + ' + '+mealId
             ingreds=doc_ref.to_dict()['ingred_names']
             ingreds_list=ingreds.split('*')
             for ingred in ingreds_list:
                 ingred_id=ingred.split('+')
                 if(len(ingred_id)>1):
                     db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
-                        {u"recipe_names": firestore.ArrayUnion([meal_name])}
+                        {u"recipe_names": firestore.ArrayUnion([meal_entry])}
                         )
                     meal_length=len(db.collection(u'meal_ingred').document(uid+ingred_id[1]).get().to_dict()['recipe_names'])
                     db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
@@ -55,7 +56,7 @@ def get_meals():
             {u"meal_time": firestore.ArrayUnion([Day+mealTime])})
 
         #print(mealId, Day, mealTime)
-        addIngrediants(mealId, uid)
+        addIngrediants(mealId, uid, Day, mealTime)
         #print("yoyo\n")
 
     def mealScheduledOrNot(day, uids):
