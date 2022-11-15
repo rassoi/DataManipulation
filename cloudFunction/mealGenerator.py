@@ -6,19 +6,58 @@ import datetime
 from chooseMeal import lunch, brakefast, dinner
 
 
+
+# add ingredient update
+# add batch processing
+# Make all ingredients not audited an available
+
+
 def get_meals():
     if not firebase_admin._apps:
         cred = credentials.Certificate(
-            '/Users/manishsingh/Documents/Study/meal_entry_python1/rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
+            r'C:\Users\Siddhant Bhatt\Downloads\rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
         default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
+    def addIngrediants(mealId, uid, Day, mealtime):
+        doc_ref=db.collection(u'recipes').document(mealId).get()
+        if doc_ref.exists:
+            meal_name=doc_ref.to_dict()['name']
+            meal_entry=meal_name+' : '+Day+' : '+ mealtime + ' + '+mealId
+            ingreds=doc_ref.to_dict()['ingred_names']
+            ingreds_list=ingreds.split('*')
+            for ingred in ingreds_list:
+                ingred_id=ingred.split('+')
+                if(len(ingred_id)>1):
+                    db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
+                        {u"recipe_names": firestore.ArrayUnion([meal_entry])}
+                        )
+                    meal_length=len(db.collection(u'meal_ingred').document(uid+ingred_id[1]).get().to_dict()['recipe_names'])
+                    db.collection(u"meal_ingred").document(uid+ingred_id[1]).update(
+                            {u'meal_count': meal_length}
+                    )                     
+
+                        
+
+                    
+
+        return
+       
 
     def scheduleMeal(mealId, Day, mealTime, uid):
 
+        
+        # meal_cnt=db.collection(u'meal_ingred').document(uid+mealId).get(
+        #     {u"meal_time": firestore.ArrayUnion([Day+mealTime])})
+        
+        # meal_cnt=meal_cnt+1
+        # db.collection(u'temp').document(uid+mealId).update(
+        #     {u"meal_time": meal_cnt})
         db.collection(u'temp').document(uid+mealId).update(
             {u"meal_time": firestore.ArrayUnion([Day+mealTime])})
 
-        print(mealId, Day, mealTime)
+        #print(mealId, Day, mealTime)
+        addIngrediants(mealId, uid, Day, mealTime)
+        #print("yoyo\n")
 
     def mealScheduledOrNot(day, uids):
         flag = 0
@@ -41,17 +80,75 @@ def get_meals():
     date3 = today_date+datetime.timedelta(days=2)
 
     date4 = today_date+datetime.timedelta(days=3)
+    date5 = today_date+datetime.timedelta(days=4)
     today = today_date.strftime('%A')
     tomorrow = tomorrow_date.strftime('%A')
+    # day2 = "tommorow"
     day3 = date3.strftime('%A')
     day4 = date4.strftime('%A')
+    day5 = date5.strftime('%A')
 
-    uid = ["qnxzsG184Gfp17RDnvGdAg6DFu23", "qgAmuXBvsRMXpQDUvxS0FraQiQH3"]
+    uid = ["Gw6DP7h1xnN0h4IH5sAI7kxOT0K3"]
     # recipes = db.collection(u'temp').stream()
 
-    days = [day4, day3, "Tomorrow", "Today"]
+    days = ["", "Today", "Tomorrow", day3, day4, day5]
     print(days)
 
+    def setMeals(uids, day):
+        Lunch = lunch()
+        Dinner = dinner()
+        Brakefast = brakefast()
+
+        if len(Lunch) == 4:
+            while Lunch[1] != Dinner[1]:
+                Dinner = dinner()
+        else:
+            while len(Dinner) != 3:
+                Dinner = dinner()
+        # day4
+
+        print(Brakefast)
+        for bf in Brakefast:
+            # print(bf, day4, "Brakefast", uids)
+            scheduleMeal(bf, day, "Brakefast", uids)
+
+        print(Lunch)
+        for Lunch1 in Lunch:
+            # print(Lunch, day4, "Lunch", uids)
+            scheduleMeal(Lunch1, day, "Lunch", uids)
+
+        print(Dinner)
+        for Dinner1 in Dinner:
+            # print(Dinner1, day4, "Dinner", uids)
+            scheduleMeal(Dinner1, day, "Dinner", uids)
+
+        # day3
+        # Lunch = lunch()
+        # Dinner = dinner()
+        # Brakefast = brakefast()
+
+        # if len(Lunch) == 4:
+        #     while Lunch[1] != Dinner[1]:
+        #         Dinner = dinner()
+        # else:
+        #     while len(Dinner) != 3:
+        #         Dinner = dinner()
+
+        # print(Brakefast)
+        # for bf in Brakefast:
+        #     print(bf, day3, "Brakefast", uids)
+        #     scheduleMeal(bf, day3, "Brakefast", uids)
+
+        # print(Lunch)
+        # for Lunch1 in Lunch:
+        #     print(Lunch1, day3, "Lunch", uids)
+        #     scheduleMeal(Lunch1, day3, "Lunch", uids)
+
+        # print(Dinner)
+        # for Dinner1 in Dinner:
+        #     print(Dinner1, day3, "Dinner", uids)
+        #     scheduleMeal(Dinner1, day3, "Dinner", uids)
+    flag = 0
     for uids in uid:
         print("starting for ::::::::::::::::::::::::::::::::::::::::::::::", uids)
 
@@ -60,123 +157,27 @@ def get_meals():
         print("hi")
 
         # print(day)
-        flagDay4 = mealScheduledOrNot(days[0], uids)
-        flagDay3 = mealScheduledOrNot(days[1], uids)
+        flagDay5 = mealScheduledOrNot(days[5], uids)
+        flagDay4 = mealScheduledOrNot(days[4], uids)
+        flagDay3 = mealScheduledOrNot(days[3], uids)
         flagDay2 = mealScheduledOrNot(days[2], uids)
-        flagDay1 = mealScheduledOrNot(days[3], uids)
-        if flagDay3 == 0:
-            if flagDay4 == 0:
+        flagDay1 = mealScheduledOrNot(days[1], uids)
 
-                Lunch = lunch()
-                Dinner = dinner()
-                Brakefast = brakefast()
+        print(flagDay3, flagDay2, flagDay1)
+        if not(flagDay2 or flagDay3 or flagDay1):
+                        setMeals(uids, days[3])
+                        setMeals(uids, days[2])
+                        setMeals(uids, days[1])
+                        flag=1
+        print(flag, flagDay5, flagDay4, flagDay3)
+        if not(flag or flagDay5 or flagDay4 or flagDay3):
+                        setMeals(uids, days[5])
+                        setMeals(uids, days[4])
+                        setMeals(uids, days[3])
 
-                if len(Lunch) == 4:
-                    while Lunch[1] != Dinner[1]:
-                        Dinner = dinner()
-                else:
-                    while len(Dinner) != 3:
-                        Dinner = dinner()
-                # day4
-
-                print(Brakefast)
-                for bf in Brakefast:
-                    # print(bf, day4, "Brakefast", uids)
-                    scheduleMeal(bf, day4, "Brakefast", uids)
-
-                print(Lunch)
-                for Lunch1 in Lunch:
-                    # print(Lunch, day4, "Lunch", uids)
-                    scheduleMeal(Lunch1, day4, "Lunch", uids)
-
-                print(Dinner)
-                for Dinner1 in Dinner:
-                    # print(Dinner1, day4, "Dinner", uids)
-                    scheduleMeal(Dinner1, day4, "Dinner", uids)
-
-                # day3
-                Lunch = lunch()
-                Dinner = dinner()
-                Brakefast = brakefast()
-
-                if len(Lunch) == 4:
-                    while Lunch[1] != Dinner[1]:
-                        Dinner = dinner()
-                else:
-                    while len(Dinner) != 3:
-                        Dinner = dinner()
-
-                print(Brakefast)
-                for bf in Brakefast:
-                    print(bf, day3, "Brakefast", uids)
-                    scheduleMeal(bf, day3, "Brakefast", uids)
-
-                print(Lunch)
-                for Lunch1 in Lunch:
-                    print(Lunch1, day3, "Lunch", uids)
-                    scheduleMeal(Lunch1, day3, "Lunch", uids)
-
-                print(Dinner)
-                for Dinner1 in Dinner:
-                    print(Dinner1, day3, "Dinner", uids)
-                    scheduleMeal(Dinner1, day3, "Dinner", uids)
-
-        if flagDay2 == 0:
-            if flagDay1 == 0:
-
-                Lunch = lunch()
-                Dinner = dinner()
-                Brakefast = brakefast()
-
-                if len(Lunch) == 4:
-                    while Lunch[1] != Dinner[1]:
-                        Dinner = dinner()
-                else:
-                    while len(Dinner) != 3:
-                        Dinner = dinner()
-                # day4
-
-                print(Brakefast)
-                for bf in Brakefast:
-                    # print(bf, day4, "Brakefast", uids)
-                    scheduleMeal(bf, "Tomorrow", "Brakefast", uids)
-
-                print(Lunch)
-                for Lunch1 in Lunch:
-                    # print(Lunch, day4, "Lunch", uids)
-                    scheduleMeal(Lunch1, "Tomorrow", "Lunch", uids)
-
-                print(Dinner)
-                for Dinner1 in Dinner:
-                    # print(Dinner1, day4, "Dinner", uids)
-                    scheduleMeal(Dinner1, "Tomorrow", "Dinner", uids)
-
-                # day3
-                Lunch = lunch()
-                Dinner = dinner()
-                Brakefast = brakefast()
-
-                if len(Lunch) == 4:
-                    while Lunch[1] != Dinner[1]:
-                        Dinner = dinner()
-                else:
-                    while len(Dinner) != 3:
-                        Dinner = dinner()
-
-                print(Brakefast)
-                for bf in Brakefast:
-                    # print(bf, "Today", "Brakefast", uids)
-                    scheduleMeal(bf, "Today", "Brakefast", uids)
-
-                print(Lunch)
-                for Lunch1 in Lunch:
-                    # print(Lunch1, day3, "Lunch", uids)
-                    scheduleMeal(Lunch1, "Today", "Lunch", uids)
-
-                print(Dinner)
-                for Dinner1 in Dinner:
-                    # print(Dinner1, day3, "Dinner", uids)
-                    scheduleMeal(Dinner1, "Today", "Dinner", uids)
 
 
 get_meals()
+
+# check if today tommorow is empty
+#
