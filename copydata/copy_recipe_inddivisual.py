@@ -81,7 +81,7 @@ for i, doc in enumerate(recipes):
         "uid": user_id,
         "day": [],
         "meal_time": [],
-        "status": "notLive",
+        "status": "Published",
         "counter": 1,
         "fav": False,
         "which_meal": [],

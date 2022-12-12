@@ -1,16 +1,32 @@
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
-import random
-from datetime import datetime
-if not firebase_admin._apps:
-        cred = credentials.Certificate(
-            r'C:\Users\Siddhant Bhatt\Downloads\rassoi-767af-firebase-adminsdk-q09j7-a66f37f511.json')
-        default_app = firebase_admin.initialize_app(cred)
-db = firestore.client()
-def test():
-    users_ref=db.collection(u'temp').stream()
-    for user_ref in users_ref:
-        if(len(db.collection(u'temp').document(user_ref.id).get().to_dict()[u'meal_time'])>0):
-            print(user_ref.id)
-test()
+
+a = {
+    'oldValue': {
+
+    },
+    'updateMask': {
+
+    },
+    'value': {
+        'createTime': '2022-12-04T14:39:31.490127Z',
+        'fields': {
+            'created_time': {
+                'timestampValue': '2022-12-04T14:39:31.391Z'
+            },
+            'display_name': {
+                'stringValue': 'rassoi app'
+            },
+            'email': {
+                'stringValue': 'rassoi.app@gmail.com'
+            },
+            'photo_url': {
+                'stringValue': 'https://lh3.googleusercontent.com/a/AEdFTp76P1NPKVb1Xe02PoYohT484P2sGJDulI2mQDLo=s96-c'
+            },
+            'uid': {
+                'stringValue': '2Si5RuOy0DRSooL3C4Hiyhgjycj2'
+            }
+        },
+        'name': 'projects/rassoi-767af/databases/(default)/documents/users/2Si5RuOy0DRSooL3C4Hiyhgjycj2',
+        'updateTime': '2022-12-04T14:39:31.490127Z'
+    }
+}
+print(a["value"]["fields"]["uid"]["stringValue"])

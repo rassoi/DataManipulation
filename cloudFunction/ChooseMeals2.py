@@ -91,13 +91,13 @@ for item in meals_list:
         dalType_list.append(item)
 
     if "Breakfast" in categoryName:
-        # try:
-        #     subCategories = recipe["subCategories"]
-        #     if "bfWithChutney" in subCategories:
-        #         bFWithChutney_list.append(item)
+        try:
+            subCategories = recipe["subCategories"]
+            if "bfWithChutney" in subCategories:
+                bFWithChutney_list.append(item)
 
-        # except Exception as e:
-        #     bF_list.append(item)
+        except Exception as e:
+            bF_list.append(item)
         bF_list.append(item)
 
     if "Breads" in categoryName:
@@ -226,20 +226,16 @@ def dinner():
 
 
 def brakefast():
-    print(bF_list)
-    bF_index = random.randint(0, len(bF_list)-1)
-    bF = [bF_list[bF_index]]
-    # bFtype_index = random.randint(0, len(bFtype_list)-1)
-    # bFtype = bFtype_list[bFtype_index]
-    # if bFtype == "bF_list":
-    #     bF_index = random.randint(0, len(bF_list)-1)
-    #     bF = [bF_list[bF_index]]
-    # else:
-    #     bF_index = random.randint(0, len(bFWithChutney_list)-1)
-    #     bF = [bFWithChutney_list[bF_index]]
-    #     bFChutney_index = random.randint(0, len(bFChutney_list)-1)
-    #     bF.append(bFChutney_list[bFChutney_index])
-    print(bF)
+    bFtype_index = random.randint(0, len(bFtype_list)-1)
+    bFtype = bFtype_list[bFtype_index]
+    if bFtype == "bF_list":
+        bF_index = random.randint(0, len(bF_list)-1)
+        bF = [bF_list[bF_index]]
+    else:
+        bF_index = random.randint(0, len(bFWithChutney_list)-1)
+        bF = [bFWithChutney_list[bF_index]]
+        bFChutney_index = random.randint(0, len(bFChutney_list)-1)
+        bF.append(bFChutney_list[bFChutney_index])
     return(bF)
 
 

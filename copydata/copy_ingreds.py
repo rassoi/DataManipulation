@@ -11,7 +11,7 @@ db = firestore.client(default_app)
 
 
 # ,"qgAmuXBvsRMXpQDUvxS0FraQiQH3", "qnxzsG184Gfp17RDnvGdAg6DFu23"]
-user_id_list = ["qgAmuXBvsRMXpQDUvxS0FraQiQH3"]
+user_id_list = ["V8U9wkcAHfUnXgm2xRpZroTVuNL2"]
 
 for user_id in user_id_list:
     ingredients = db.collection(u'ingredients').stream()
@@ -25,6 +25,13 @@ for user_id in user_id_list:
         inged_name = doc_ref["english"]
         inged_name_hindi = doc_ref["hindi"]
         inged_img = doc_ref["img"]
+        # print(inged_name)
+        try:
+            parishiblity = doc_ref["parishablity"]
+
+        except:
+            print(inged_name)
+
         ingred_payload = {
             u'inged_id': inged_id,
             u'english': inged_name,
@@ -34,7 +41,10 @@ for user_id in user_id_list:
             u'user_uid': user_id,
             u"status": "unavailable",
             u"meal_count": 0,
-            u"audit": 0
+            u"audit": 0,
+            u"parishiblity": parishiblity,
+            u"price": 0,
+            u"desc": "",
         }
 
         doc_name = user_id+inged_id

@@ -14,7 +14,7 @@ if not firebase_admin._apps:
     default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-uid = "4u2FyDU2pNfkOayQlUeVhISdbTJ3"
+uid = "MnLburMpzhZd4ysBFVn6gnhYyMA3"
 
 
 # Today
@@ -26,8 +26,9 @@ def updateUpcommingMeals(uid, paher):
 
         recipe = db.collection(u'temp').document(
             uid+recipeDoc.id).get().to_dict()
-        # print(recipe["name"])
+        print(recipe["name"])
         print("TodayBrakefast")
+        
         if "TodayBrakefast" in recipe["meal_time"]:
 
             if paher == 1 or paher == 2 or paher == 3:
